@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Learn.Adventure.Models;
+using Learn.Adventure.Models.Abstractions;
+using Learn.Adventure.Models.Implementation;
+using Learn.Adventure.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace Learn.Adventure
@@ -26,6 +31,13 @@ namespace Learn.Adventure
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DatabaseSettings>(
+                Configuration.GetSection(nameof(DatabaseSettings)));
+            services.AddSingleton<IDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -42,8 +54,6 @@ namespace Learn.Adventure
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Learn.Adventure v1"));
             }
-
-            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
