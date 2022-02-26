@@ -28,9 +28,10 @@ services:
     build: .
     restart: always
     ports:
-      - 6000:80
+      - 5100:80
     environment:
       DatabaseSettings__Host: mongo
+      ASPNETCORE_ENVIRONMENT: "Production"
     depends_on: 
       - mongo
         
