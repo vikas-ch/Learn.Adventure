@@ -46,12 +46,6 @@ namespace Learn.Adventure.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] UserDTO user)
         {
-            if (user is null)
-                return BadRequest("Invalid Request");
-
-            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.Email))
-                return BadRequest("First name and email are mandatory");
-
             var userEntity = new User()
             {
                 Email = user.Email,
@@ -61,20 +55,14 @@ namespace Learn.Adventure.Controllers
             
             _userRepository.InsertOne(userEntity);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
         public ActionResult Put([FromBody] UserDTO user)
         {
-            if (user is null)
-                return BadRequest("Invalid Request");
-
             if (string.IsNullOrEmpty(user.Id))
                 return NotFound();
-            
-            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.Email))
-                return BadRequest("First name and email are mandatory");
 
             var userEntity = new User()
             {
@@ -86,7 +74,7 @@ namespace Learn.Adventure.Controllers
 
             _userRepository.ReplaceOne(userEntity);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete]
@@ -97,7 +85,7 @@ namespace Learn.Adventure.Controllers
             
             _userRepository.DeleteById(id);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

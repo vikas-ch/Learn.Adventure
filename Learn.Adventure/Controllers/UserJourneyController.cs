@@ -6,6 +6,7 @@ using Learn.Adventure.Models.DTO;
 using Learn.Adventure.Models.Entities;
 using Learn.Adventure.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -49,19 +50,16 @@ namespace Learn.Adventure.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] UserJourneyDTO userJourneyDTO)
         {
-            if (userJourneyDTO is null)
-                return BadRequest("Invalid Request");
-
-            if (string.IsNullOrEmpty(userJourneyDTO.UserId) || string.IsNullOrEmpty(userJourneyDTO.AdventureId))
-                return BadRequest("User Id and Adventure Id are mandatory");
-
             var userJourney = _userJourneyRepository.FindOne(journey =>
                 journey.UserId == ObjectId.Parse(userJourneyDTO.UserId)
                 && journey.AdventureId == ObjectId.Parse(userJourneyDTO.AdventureId));
 
             if (userJourney is not null)
-                return BadRequest("This adventure is already underway for this user");
-
+            {
+                ModelState.AddModelError("UserJourney", "testing error");
+                return ValidationProblem(ModelState);
+            }
+            
             userJourney = new UserJourney()
             {
                 UserId = ObjectId.Parse(userJourneyDTO.UserId),
@@ -71,18 +69,12 @@ namespace Learn.Adventure.Controllers
 
             _userJourneyRepository.InsertOne(userJourney);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
         public ActionResult Put([FromBody] UserJourneyDTO userJourneyDTO)
         {
-            if (userJourneyDTO is null)
-                return BadRequest("Invalid Request");
-
-            if (string.IsNullOrEmpty(userJourneyDTO.UserId) || string.IsNullOrEmpty(userJourneyDTO.AdventureId))
-                return BadRequest("User Id and Adventure Id are mandatory");
-            
             var userJourney = _userJourneyRepository.FindOne(journey =>
                 journey.UserId == ObjectId.Parse(userJourneyDTO.UserId)
                 && journey.AdventureId == ObjectId.Parse(userJourneyDTO.AdventureId));
@@ -100,13 +92,8 @@ namespace Learn.Adventure.Controllers
         public ActionResult Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return BadRequest("Invalid request");
-
-            var userJourney = _userJourneyRepository.FindById(id);
-
-            if (userJourney is null)
                 return NotFound();
-            
+
             _userJourneyRepository.DeleteById(id);
             return Ok();
         }

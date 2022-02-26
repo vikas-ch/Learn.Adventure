@@ -52,32 +52,21 @@ namespace Learn.Adventure.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] AdventureDTO adventure)
         {
-            if (adventure is null)
-                return BadRequest("Invalid request");
 
-            if (string.IsNullOrEmpty(adventure.Name))
-                return BadRequest("Name is mandatory");
-            
             var adventureEntity = new Models.Entities.Adventure()
             {
                 AdventureName = adventure.Name
             };
             
             _adventureRepository.InsertOne(adventureEntity);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
         public ActionResult Put([FromBody] AdventureDTO adventure)
         {
-            if (adventure is null)
-                return BadRequest("Invalid request");
-
             if (string.IsNullOrEmpty(adventure.Id))
                 return NotFound();
-
-            if (string.IsNullOrEmpty(adventure.Name))
-                return BadRequest("Name is mandatory");
 
             var adventureEntity = new Models.Entities.Adventure()
             {
@@ -86,8 +75,7 @@ namespace Learn.Adventure.Controllers
             };
             
             _adventureRepository.ReplaceOne(adventureEntity);
-
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -98,7 +86,7 @@ namespace Learn.Adventure.Controllers
             
             _adventureRepository.DeleteById(id);
             _optionRepository.DeleteOne(doc=> doc.AdventureId == ObjectId.Parse(id));
-            return Ok();
+            return NoContent();
         }
     }
 }

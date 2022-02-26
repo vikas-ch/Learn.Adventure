@@ -46,16 +46,12 @@ namespace Learn.Adventure.Controllers
             };
             
             _repository.InsertOne(optionEntity);
-            
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
         public ActionResult Put([FromBody] OptionDTO option)
         {
-            if (option is null)
-                return BadRequest();
-
             if (string.IsNullOrEmpty(option.Id))
                 return NotFound();
 
@@ -68,7 +64,7 @@ namespace Learn.Adventure.Controllers
             };
             
             _repository.ReplaceOne(optionEntity);
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -78,7 +74,7 @@ namespace Learn.Adventure.Controllers
                 return NotFound();
             
             _repository.DeleteById(id);
-            return Ok();
+            return NoContent();
         }
     }
 }
