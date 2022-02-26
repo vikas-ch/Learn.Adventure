@@ -29,7 +29,6 @@ namespace Learn.Adventure.Controllers
             {
                 Id = option.Id.ToString(),
                 AdventureId = option.AdventureId.ToString(),
-                // Node = option.Node
                 ParentId = option.ParentId.ToString(),
                 Text = option.Text
             }));
@@ -64,7 +63,6 @@ namespace Learn.Adventure.Controllers
             {
                 Id = ObjectId.Parse(option.Id),
                 AdventureId = ObjectId.Parse(option.AdventureId),
-                // Node = option.Node
                 ParentId = string.IsNullOrEmpty(option.ParentId) ? ObjectId.Empty : ObjectId.Parse(option.ParentId),
                 Text = option.Text
             };

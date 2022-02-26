@@ -11,7 +11,6 @@ namespace Learn.Adventure.Models.Entities
     {
         public ObjectId UserId { get; set; }
         public ObjectId AdventureId { get; set; }
-        // public UserSelectedNode Node { get; set; }
         public List<string> SelectedOptions { get; set; }
     }
 }

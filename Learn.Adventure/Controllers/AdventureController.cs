@@ -31,7 +31,6 @@ namespace Learn.Adventure.Controllers
                 Name = adventure.AdventureName
             });
             
-            
             return Ok(adventures);
         }
 
@@ -39,9 +38,7 @@ namespace Learn.Adventure.Controllers
         public ActionResult<AdventureDTO> Get(string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 return NotFound();
-            }
 
             var adventureEntity = _adventureRepository.FindById(id);
 
