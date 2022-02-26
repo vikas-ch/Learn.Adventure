@@ -7,7 +7,8 @@ namespace Learn.Adventure.Models.Abstractions
 {
     public interface IDocument
     {
-        [BsonId, BsonRepresentation(BsonType.ObjectId)]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         ObjectId Id { get; set; }
 
         DateTime CreatedAt { get; }

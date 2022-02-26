@@ -29,5 +29,17 @@ namespace Learn.Adventure.Repository
         void InsertOne(T document);
 
         Task InsertOneAsync(T document);
+        
+        void ReplaceOne(T document);
+
+        Task ReplaceOneAsync(T document);
+        
+        void DeleteOne(Expression<Func<T, bool>> filterExpression);
+
+        Task DeleteOneAsync(Expression<Func<T, bool>> filterExpression);
+
+        void DeleteById(string id);
+
+        Task DeleteByIdAsync(string id);
     }
 }

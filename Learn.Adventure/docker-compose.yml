@@ -23,3 +23,15 @@ services:
       ME_CONFIG_MONGODB_URL: "mongodb://root:example@mongodb:27017/"
     depends_on: 
       - mongo
+  
+  learn-adventure-server:
+    build: .
+    restart: always
+    ports:
+      - 6000:80
+    environment:
+      DatabaseSettings__Host: mongo
+    depends_on: 
+      - mongo
+        
+      

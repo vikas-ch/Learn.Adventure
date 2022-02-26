@@ -75,5 +75,39 @@ namespace Learn.Adventure.Repository
         { 
             await _collection.InsertOneAsync(document);
         }
+
+        public void ReplaceOne(T document)
+        {
+            var filter = Builders<T>.Filter.Eq(doc => doc.Id, document.Id);
+            _collection.FindOneAndReplace(filter, document);
+        }
+
+        public async Task ReplaceOneAsync(T document)
+        {
+            var filter = Builders<T>.Filter.Eq(doc => doc.Id, document.Id);
+            await _collection.FindOneAndReplaceAsync(filter, document);
+        }
+
+        public void DeleteOne(Expression<Func<T, bool>> filterExpression)
+        {
+            _collection.FindOneAndDelete(filterExpression);
+        }
+
+        public async Task DeleteOneAsync(Expression<Func<T, bool>> filterExpression)
+        {
+            await _collection.FindOneAndDeleteAsync(filterExpression);
+        }
+
+        public void DeleteById(string id)
+        {
+            var filter = Builders<T>.Filter.Eq(doc => doc.Id, ObjectId.Parse(id));
+            _collection.FindOneAndDelete(filter);
+        }
+
+        public async Task DeleteByIdAsync(string id)
+        {
+            var filter = Builders<T>.Filter.Eq(doc => doc.Id, ObjectId.Parse(id));
+            await _collection.FindOneAndDeleteAsync(filter);
+        }
     }
 }

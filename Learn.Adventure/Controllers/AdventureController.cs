@@ -1,13 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DnsClient.Internal;
 using Learn.Adventure.Models.DTO;
+using Learn.Adventure.Models.Entities;
 using Learn.Adventure.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace Learn.Adventure.Controllers
 {
@@ -15,19 +12,19 @@ namespace Learn.Adventure.Controllers
     [Route("[controller]")]
     public class AdventureController : ControllerBase
     {
-        private readonly IRepository<Models.Entities.Adventure> _repository;
-        private readonly ILogger<AdventureController> _logger;
+        private readonly IRepository<Models.Entities.Adventure> _adventureRepository;
+        private readonly IRepository<Option> _optionRepository;
 
-        public AdventureController(IRepository<Models.Entities.Adventure> repository, ILogger<AdventureController> logger)
+        public AdventureController(IRepository<Models.Entities.Adventure> repository, IRepository<Option> optionRepository)
         {
-            _repository = repository;
-            _logger = logger;
+            _adventureRepository = repository;
+            _optionRepository = optionRepository;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Models.DTO.AdventureDTO>> Get()
+        public ActionResult<IEnumerable<AdventureDTO>> Get()
         {
-            var adventures = _repository.FilterBy(
+            var adventures = _adventureRepository.FilterBy(
                 filter => true).Select(adventure => new AdventureDTO()
             {
                 Id = adventure.Id.ToString(),
@@ -38,15 +35,15 @@ namespace Learn.Adventure.Controllers
             return Ok(adventures);
         }
 
-        [HttpGet("{id}", Name = "GetAdventure")]
-        public ActionResult<Models.DTO.AdventureDTO> Get(string id)
+        [HttpGet("{id}")]
+        public ActionResult<AdventureDTO> Get(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var adventureEntity = _repository.FindById(id);
+            var adventureEntity = _adventureRepository.FindById(id);
 
             return new AdventureDTO()
             {
@@ -56,14 +53,54 @@ namespace Learn.Adventure.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Models.DTO.AdventureDTO adventure)
+        public ActionResult Post([FromBody] AdventureDTO adventure)
         {
+            if (adventure is null)
+                return BadRequest("Invalid request");
+
+            if (string.IsNullOrEmpty(adventure.Name))
+                return BadRequest("Name is mandatory");
+            
             var adventureEntity = new Models.Entities.Adventure()
             {
                 AdventureName = adventure.Name
             };
             
-            _repository.InsertOne(adventureEntity);
+            _adventureRepository.InsertOne(adventureEntity);
+            return Ok();
+        }
+
+        [HttpPut]
+        public ActionResult Put([FromBody] AdventureDTO adventure)
+        {
+            if (adventure is null)
+                return BadRequest("Invalid request");
+
+            if (string.IsNullOrEmpty(adventure.Id))
+                return NotFound();
+
+            if (string.IsNullOrEmpty(adventure.Name))
+                return BadRequest("Name is mandatory");
+
+            var adventureEntity = new Models.Entities.Adventure()
+            {
+                Id = ObjectId.Parse(adventure.Id),
+                AdventureName = adventure.Name
+            };
+            
+            _adventureRepository.ReplaceOne(adventureEntity);
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return NotFound();
+            
+            _adventureRepository.DeleteById(id);
+            _optionRepository.DeleteOne(doc=> doc.AdventureId == ObjectId.Parse(id));
             return Ok();
         }
     }
