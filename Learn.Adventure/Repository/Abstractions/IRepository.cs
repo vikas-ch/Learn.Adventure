@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Learn.Adventure.Models.Abstractions;
 
-namespace Learn.Adventure.Repository
+namespace Learn.Adventure.Repository.Abstractions
 {
     public interface IRepository<T> where T : IDocument
     {

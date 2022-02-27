@@ -5,13 +5,14 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Learn.Adventure.Attributes;
 using Learn.Adventure.Models.Abstractions;
+using Learn.Adventure.Repository.Abstractions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Learn.Adventure.Repository
+namespace Learn.Adventure.Repository.Implementation
 {
     public class Repository<T> : IRepository<T> 
-        where T : IDocument
+        where T : IDocument, new()
     {
         private readonly IMongoCollection<T> _collection;
 
@@ -56,14 +57,23 @@ namespace Learn.Adventure.Repository
 
         public T FindById(string id)
         {
-            var filter = Builders<T>.Filter.Eq(document => document.Id, ObjectId.Parse(id));
-            return _collection.Find(filter).SingleOrDefault();
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                var filter = Builders<T>.Filter.Eq(document => document.Id, objectId);
+                return _collection.Find(filter).SingleOrDefault();
+            }
+            return new T();
         }
 
         public async Task<T> FindByIdAsync(string id)
         {
-            var filter = Builders<T>.Filter.Eq(document => document.Id, ObjectId.Parse(id));
-            return await _collection.Find(filter).SingleOrDefaultAsync();
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                var filter = Builders<T>.Filter.Eq(document => document.Id, objectId);
+                return await _collection.Find(filter).SingleOrDefaultAsync();
+            }
+
+            return new T();
         }
         
         public void InsertOne(T document)
@@ -100,14 +110,20 @@ namespace Learn.Adventure.Repository
 
         public void DeleteById(string id)
         {
-            var filter = Builders<T>.Filter.Eq(doc => doc.Id, ObjectId.Parse(id));
-            _collection.FindOneAndDelete(filter);
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                var filter = Builders<T>.Filter.Eq(doc => doc.Id, objectId);
+                _collection.FindOneAndDelete(filter);
+            }
         }
 
         public async Task DeleteByIdAsync(string id)
         {
-            var filter = Builders<T>.Filter.Eq(doc => doc.Id, ObjectId.Parse(id));
-            await _collection.FindOneAndDeleteAsync(filter);
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                var filter = Builders<T>.Filter.Eq(doc => doc.Id, objectId);
+                await _collection.FindOneAndDeleteAsync(filter);
+            }
         }
     }
 }

@@ -3,6 +3,8 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DocumentationFile>Learn.Adventure.xml</DocumentationFile>
+        <NoWarn>1701;1702;1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

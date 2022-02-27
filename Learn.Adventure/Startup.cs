@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Learn.Adventure.Extensions;
 using Learn.Adventure.Models;
 using Learn.Adventure.Models.Abstractions;
 using Learn.Adventure.Models.Implementation;
 using Learn.Adventure.Repository;
+using Learn.Adventure.Repository.Abstractions;
+using Learn.Adventure.Repository.Implementation;
+using Learn.Adventure.Services.Abstractions;
+using Learn.Adventure.Services.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -36,12 +43,20 @@ namespace Learn.Adventure
             services.AddSingleton<IDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddAdventureServices();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Learn.Adventure", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Learn.Adventure", 
+                    Version = "v1",
+                    Description = "APIs for a User Journey!"
+                });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
 

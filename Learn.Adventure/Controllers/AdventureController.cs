@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Learn.Adventure.Models.DTO;
 using Learn.Adventure.Models.Entities;
 using Learn.Adventure.Repository;
+using Learn.Adventure.Repository.Abstractions;
+using Learn.Adventure.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -12,80 +15,97 @@ namespace Learn.Adventure.Controllers
     [Route("[controller]")]
     public class AdventureController : ControllerBase
     {
-        private readonly IRepository<Models.Entities.Adventure> _adventureRepository;
         private readonly IRepository<Option> _optionRepository;
+        private readonly IAdventureService _adventureService;
 
-        public AdventureController(IRepository<Models.Entities.Adventure> repository, IRepository<Option> optionRepository)
+        public AdventureController(IAdventureService adventureService, IRepository<Option> optionRepository)
         {
-            _adventureRepository = repository;
+            _adventureService = adventureService;
             _optionRepository = optionRepository;
         }
-
+        
+        
+        /// <summary>
+        /// Get list of all adventures
+        /// </summary>
+        /// <returns>List of adventures</returns>
         [HttpGet]
         public ActionResult<IEnumerable<AdventureDTO>> Get()
         {
-            var adventures = _adventureRepository.FilterBy(
-                filter => true).Select(adventure => new AdventureDTO()
-            {
-                Id = adventure.Id.ToString(),
-                Name = adventure.AdventureName
-            });
-            
+            var adventures = _adventureService.Get();
             return Ok(adventures);
         }
 
+        /// <summary>
+        /// Get adventure by adventure id
+        /// </summary>
+        /// <param name="id">Adventure Id</param>
+        /// <returns>Adventure object based on specified Id</returns>
         [HttpGet("{id}")]
         public ActionResult<AdventureDTO> Get(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return NotFound();
 
-            var adventureEntity = _adventureRepository.FindById(id);
-
-            return new AdventureDTO()
-            {
-                Id = adventureEntity.Id.ToString(),
-                Name = adventureEntity.AdventureName
-            };
+            return Ok(_adventureService.Get(id));
         }
 
+        /// <summary>
+        /// Create a new adventure
+        /// </summary>
+        /// <param name="adventure">Adventure object</param>
+        /// <remarks>
+        /// Object Definition:
+        /// 
+        ///     {
+        ///         id (blank for adventure creation): Id of the adventure
+        ///         name: Name of the adventure
+        ///     }
+        /// </remarks>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Post([FromBody] AdventureDTO adventure)
         {
-
-            var adventureEntity = new Models.Entities.Adventure()
-            {
-                AdventureName = adventure.Name
-            };
+            _adventureService.Create(adventure);
             
-            _adventureRepository.InsertOne(adventureEntity);
             return NoContent();
         }
 
+        /// <summary>
+        /// Update an existing adventure
+        /// </summary>
+        /// <param name="adventure"></param>
+        /// /// <remarks>
+        /// Object Definition:
+        /// 
+        ///     {
+        ///         id: Id of the adventure
+        ///         name: Name of the adventure
+        ///     }
+        /// </remarks>
+        /// <returns></returns>
         [HttpPut]
         public ActionResult Put([FromBody] AdventureDTO adventure)
         {
             if (string.IsNullOrEmpty(adventure.Id))
                 return NotFound();
 
-            var adventureEntity = new Models.Entities.Adventure()
-            {
-                Id = ObjectId.Parse(adventure.Id),
-                AdventureName = adventure.Name
-            };
-            
-            _adventureRepository.ReplaceOne(adventureEntity);
+            _adventureService.Update(adventure);
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete an adventure
+        /// </summary>
+        /// <param name="id">Adventure Id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return NotFound();
             
-            _adventureRepository.DeleteById(id);
-            _optionRepository.DeleteOne(doc=> doc.AdventureId == ObjectId.Parse(id));
+            _adventureService.Delete(id);
             return NoContent();
         }
     }
