@@ -39,7 +39,11 @@ public class OptionServiceTests
             .Returns(option);
 
         var optionResult = _sut.Get(adventureId.ToString(), optionId.ToString());
+
+        var resultOptionId = string.IsNullOrEmpty(optionResult.Id)
+            ? ObjectId.Empty
+            : ObjectId.Parse(optionResult.Id);
         
-        Assert.Equal(optionId, ObjectId.Parse(optionResult.Id));
+        Assert.Equal(optionId, resultOptionId);
     }
 }
