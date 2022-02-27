@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.Adventure", "Learn.Adventure\Learn.Adventure.csproj", "{3311AA15-093A-4638-98E5-05139ED58834}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.Adventure.Test", "Learn.Adventure.Test\Learn.Adventure.Test.csproj", "{ECB51FD5-F232-4264-A5A2-D0AFE81E4A8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{3311AA15-093A-4638-98E5-05139ED58834}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3311AA15-093A-4638-98E5-05139ED58834}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3311AA15-093A-4638-98E5-05139ED58834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECB51FD5-F232-4264-A5A2-D0AFE81E4A8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECB51FD5-F232-4264-A5A2-D0AFE81E4A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECB51FD5-F232-4264-A5A2-D0AFE81E4A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB51FD5-F232-4264-A5A2-D0AFE81E4A8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
